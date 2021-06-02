@@ -3,6 +3,8 @@ const express = require('express');
 
 // Importer le module mongoose
 const mongoose = require('mongoose');
+
+const mongoSanitize = require('express-mongo-sanitize');
 // Importer un module pour acceder au dossier de notre serveur
 const path = require('path');
 
@@ -36,6 +38,9 @@ app.use((req, res, next) => {
 // Middelware GENERAL pour parser le body des requettes POST
 app.use(express.json());
 
+// Middelware pour filtrer certains caractères spéciaux ($ et . nottament) pouvant être utilisés
+// dans le cadre d'injection NoSQL (remplacement des caractères interdits par '_')
+app.use(mongoSanitize({replaceWith: '_',}));
 
 // Indiquer que le dossier images est un dossier à gérer de manière statique
 // et donner l'url a suivre à chaque fois qu'une requette cherche à y acceder

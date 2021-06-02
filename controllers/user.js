@@ -2,6 +2,9 @@ const User = require('../models/user.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const sessionTokenSecret = 'RANDOM_TOKEN_SECRET';
+const sessionTokenExpiresDelay = '24h';
+
 
 // fonction de création d'un nouvel user
 exports.signup = (req, res, next) => {
@@ -35,11 +38,11 @@ exports.signup = (req, res, next) => {
               userId: user._id,
               token: jwt.sign(
                 // Données a encoder dans le token
-                  {userId: user._id},
+                {userId: user._id},
                 //   seed de random a changer pour une production
-                  'RANDOM_TOKEN_SECRET',
+                sessionTokenSecret,
                 //   delai d'expiration du token
-                {expiresIn: '24h'}
+                {expiresIn: sessionTokenExpiresDelay}
               )
             });
           })
