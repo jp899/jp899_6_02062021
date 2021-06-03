@@ -3,10 +3,14 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 // Paramétrage dela dificulté de hashage
-const saltRounds = 10;
+const hashDifficulty = 10;
+// Données de salage du mot de passe avant hashage
+const saltData = "MonGrainDeSel";
+
 // paramétrage du token de session
 const sessionTokenSecret = 'RANDOM_TOKEN_SECRET';
 const sessionTokenExpiresDelay = '24h';
+
 
 // Regex de contrôle des entrées utilisateur :
 
@@ -29,7 +33,7 @@ exports.signup = (req, res, next) => {
   }
   else{
     // Auto-génération d'un salt et hashage
-    bcrypt.hash(req.body.password, saltRounds)
+    bcrypt.hash(saltData + req.body.password, hashDifficulty)
       .then(hash => {
         const user = new User({
           email: req.body.email,
@@ -50,7 +54,7 @@ exports.signup = (req, res, next) => {
         if (!user) {
           return res.status(401).json({ error: 'Utilisateur non trouvé !' });
         }
-        bcrypt.compare(req.body.password, user.password)
+        bcrypt.compare(saltData + req.body.password, user.password)
           .then(valid => {
             if (!valid) {
               return res.status(401).json({ error: 'Mot de passe incorrect !' });
