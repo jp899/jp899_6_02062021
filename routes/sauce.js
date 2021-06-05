@@ -13,13 +13,13 @@ const multer = require('../middleware/multer-config');
 // puis si necessaire le middleware pour ajouter un objet FILE à la requette avec le fichier fourni par le front
 // et enfin le middleware "fonctionnel"
 
-router.get('/', auth, sauceCtrl.getAllSauce);
-router.post('/', auth, multer, sauceCtrl.createSauce);
+router.get('/', auth.generalAuth, sauceCtrl.getAllSauce);
+router.post('/', auth.generalAuth, multer, sauceCtrl.createSauce);
 
-router.get('/:id', auth, sauceCtrl.getOneSauce);
-router.put('/:id', auth, multer, sauceCtrl.modifySauce);
-router.delete('/:id', auth, sauceCtrl.deleteSauce);
+router.get('/:id', auth.generalAuth, sauceCtrl.getOneSauce);
+router.put('/:id', auth.generalAuth, auth.ownerAuth, multer, sauceCtrl.modifySauce);
+router.delete('/:id', auth.generalAuth, auth.ownerAuth, sauceCtrl.deleteSauce);
 
-router.post('/:id/like', auth, sauceCtrl.likeSauce);
+router.post('/:id/like', auth.generalAuth, sauceCtrl.likeSauce);
 
 module.exports = router;
