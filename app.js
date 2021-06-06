@@ -12,11 +12,14 @@ const path = require('path');
 const sauceRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
 
+// Importer les paramètres d'environnement
+const config = require('./config');
+
 // Créer une application express
 const app = express();
 
 // Connection à la BDD mongoDB atlas
-mongoose.connect('mongodb+srv://user1:POMM8Hg2Cz1LuLzU@cluster0.p3gpt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+mongoose.connect(`mongodb+srv://${config.dbUser}:${config.dbPassword}@cluster0.p3gpt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`,
     { useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex:true })
@@ -35,10 +38,10 @@ app.use((req, res, next) => {
     next();
   });
 
-// Middelware GENERAL pour parser le body des requettes POST
+// Middleware GENERAL pour parser le body des requettes POST
 app.use(express.json());
 
-// Middelware pour filtrer certains caractères spéciaux ($ et . nottament) pouvant être utilisés
+// Middleware pour filtrer certains caractères spéciaux ($ et . nottament) pouvant être utilisés
 // dans le cadre d'injection NoSQL (remplacement des caractères interdits par '_')
 app.use(mongoSanitize({replaceWith: '_',}));
 

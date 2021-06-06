@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const Sauce = require('../models/sauce');
 
-const sessionTokenSecret = 'RANDOM_TOKEN_SECRET';
+const config = require('../config');
+
 
 
 // Middelware d'authentification général pour toutes les routes
@@ -10,7 +11,7 @@ exports.generalAuth = (req, res, next) => {
     //   on récupere le token dans le header (forme "Bearer <token>" à parser)
     const token = req.headers.authorization.split(' ')[1];
     // On décode le token pour récupérer le user encrypté dedans
-    const decodedToken = jwt.verify(token, sessionTokenSecret);
+    const decodedToken = jwt.verify(token, config.sessionTokenSecret);
     const userId = decodedToken.userId;
     // On controle le user décrypté par rapport au userID fourni dans la requette
     if (req.body.userId && req.body.userId !== userId) {
@@ -31,7 +32,7 @@ exports.ownerAuth = (req, res, next) => {
   try {
     //   on récupere le token dans le header 
     const token = req.headers.authorization.split(' ')[1];
-    const decodedToken = jwt.verify(token, sessionTokenSecret);
+    const decodedToken = jwt.verify(token, config.sessionTokenSecret);
     const userId = decodedToken.userId;
 
     // Recherche de la sauce à modifier en base de donnée

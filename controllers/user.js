@@ -3,17 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cryptoJS = require('crypto-js');
 
-// Paramétrage dela dificulté de hashage des passwords
-const passwordHashDifficulty = 10;
-// Données de salage du mot de passe avant hashage des passwords
-const passwordSaltData = "MonGrainDeSel";
-
-// paramétrage du token de session
-const sessionTokenSecret = 'RANDOM_TOKEN_SECRET';
-const sessionTokenExpiresDelay = '24h';
-
-// paramétrage de la clé de cryptage des emails
-const emailEncryptKey = 'bf015203d405068708a9ea0b0c0d0ecf';
+const config = require('../config');
 
 
 // Regex de contrôle des entrées utilisateur :
@@ -23,6 +13,9 @@ const emailEncryptKey = 'bf015203d405068708a9ea0b0c0d0ecf';
 const emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 // PASSWORD : de 8 à 15 caractères avec au moins : 1 minuscule, 1 majuscule, un chiffre, un caractère spécial 
 const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-+!*$@%#=_])([-+!*$@%#=_\w]{8,15})$/;
+
+// Paramétrage difficulté de hashage du password
+const passwordHashDifficulty = 10;
 
 
 // Fonction de création d'un nouvel user
@@ -37,13 +30,12 @@ exports.signup = (req, res, next) => {
   }
   else{
     // Auto-génération d'un salt et hashage du password
-    bcrypt.hash(passwordSaltData + req.body.password, passwordHashDifficulty)
+    bcrypt.hash(config.passwordSaltData + req.body.password, passwordHashDifficulty)
       .then(hash => {
         // Cryptage de l'email avant stockage en base
-        const keyWordArray = cryptoJS.enc.Hex.parse(emailEncryptKey);
+        const keyWordArray = cryptoJS.enc.Hex.parse(config.emailEncryptKey);
         // Utilisation mode ECB pour obtenir la même chaine chiffrée à chaque chiffrage pour un même email
         const encryptedEmail = cryptoJS.AES.encrypt(req.body.email, keyWordArray, {mode: cryptoJS.mode.ECB}).toString();
-        console.log(encryptedEmail);
 
         const user = new User({
           email: encryptedEmail,
@@ -60,10 +52,9 @@ exports.signup = (req, res, next) => {
 // Fonction d'authentification
   exports.login = (req, res, next) => {
     // Cryptage de l'email à rechercher
-    const keyWordArray = cryptoJS.enc.Hex.parse(emailEncryptKey);
+    const keyWordArray = cryptoJS.enc.Hex.parse(config.emailEncryptKey);
     const encryptedEmail = cryptoJS.AES.encrypt(req.body.email, keyWordArray, {mode: cryptoJS.mode.ECB}).toString();
     
-    console.log(encryptedEmail);
     // Recherche de l'user dans la base,
     User.findOne({ email: encryptedEmail })
     .then(user => {
@@ -71,10 +62,10 @@ exports.signup = (req, res, next) => {
         return res.status(401).json({ error: 'Utilisateur non trouvé !' });
       }
       // Test de décryptage de l'email
-      console.log(cryptoJS.AES.decrypt(user.email, cryptoJS.enc.Hex.parse(emailEncryptKey), {mode: cryptoJS.mode.ECB} ).toString(cryptoJS.enc.Utf8));
+      // console.log(cryptoJS.AES.decrypt(user.email, cryptoJS.enc.Hex.parse(config.emailEncryptKey), {mode: cryptoJS.mode.ECB} ).toString(cryptoJS.enc.Utf8));
 
       // Comparaison du password saisi par l'user avec le password en base
-        bcrypt.compare(passwordSaltData + req.body.password, user.password)
+        bcrypt.compare(config.passwordSaltData + req.body.password, user.password)
           .then(valid => {
             if (!valid) {
               return res.status(401).json({ error: 'Mot de passe incorrect !' });
@@ -84,10 +75,10 @@ exports.signup = (req, res, next) => {
               token: jwt.sign(
                 // Données a encoder dans le token
                 {userId: user._id},
-                // Seed pour crypter le token
-                sessionTokenSecret,
+                // Secret pour crypter le token
+                config.sessionTokenSecret,
                 // Délai d'expiration du token
-                {expiresIn: sessionTokenExpiresDelay}
+                {expiresIn: config.sessionTokenExpirationDelay}
               )
             });
           })
