@@ -26,7 +26,7 @@ const app = express();
 // logger.error('Voici une erreur simple !');
 
 // Connection à la BDD mongoDB atlas
-mongoose.connect(`mongodb+srv://${config.dbUser}:${config.dbPassword}@cluster0.p3gpt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`,
+mongoose.connect(`mongodb+srv://${config.dbUser}:${config.dbPassword}@${config.dbCluster}.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`,
     { useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex:true })

@@ -3,6 +3,7 @@ require('dotenv').config();
 
 
 // Identifiants connection base de données Mongo Atlas
+exports.dbCluster = process.env.DB_CLUSTER;
 exports.dbUser = process.env.DB_USER;
 exports.dbPassword = process.env.DB_PASSWORD;
 
