@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const cryptoJS = require('crypto-js');
 
 const config = require('../config');
+const logger = require('../logger');
 
 
 // Regex de contrôle des entrées utilisateur :
@@ -42,7 +43,10 @@ exports.signup = (req, res, next) => {
           password: hash
         });
         user.save()
-          .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
+          .then((addedUser) => {
+            logger.info(`New user signed-up and saved {userId : ${addedUser._id}}`);
+            res.status(201).json({ message: 'User created !' });
+            })
           .catch(error => res.status(400).json({ error }));
       })
       .catch(error => res.status(500).json({ error }));
@@ -59,7 +63,8 @@ exports.signup = (req, res, next) => {
     User.findOne({ email: encryptedEmail })
     .then(user => {
       if (!user) {
-        return res.status(401).json({ error: 'Utilisateur non trouvé !' });
+        logger.warning(`Login attempt failed (unkwnown user email)`);
+        return res.status(401).json({ error: 'User not found !' });
       }
       // Test de décryptage de l'email
       // console.log(cryptoJS.AES.decrypt(user.email, cryptoJS.enc.Hex.parse(config.emailEncryptKey), {mode: cryptoJS.mode.ECB} ).toString(cryptoJS.enc.Utf8));
@@ -68,8 +73,10 @@ exports.signup = (req, res, next) => {
         bcrypt.compare(config.passwordSaltData + req.body.password, user.password)
           .then(valid => {
             if (!valid) {
-              return res.status(401).json({ error: 'Mot de passe incorrect !' });
+              logger.warning(`Login attempt failed (wrong password) {userId : ${user._id}}`);
+              return res.status(401).json({ error: 'Incorrect password !' });
             }
+            
             res.status(200).json({
               userId: user._id,
               token: jwt.sign(
@@ -81,6 +88,8 @@ exports.signup = (req, res, next) => {
                 {expiresIn: config.sessionTokenExpirationDelay}
               )
             });
+
+            logger.info(`Login sucessful {userId : ${user._id}}`);
           })
           .catch(error => res.status(500).json({ error }));
       })

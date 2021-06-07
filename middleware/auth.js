@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const Sauce = require('../models/sauce');
 
 const config = require('../config');
-
+const logger = require('../logger');
 
 
 // Middelware d'authentification général pour toutes les routes
@@ -20,6 +20,7 @@ exports.generalAuth = (req, res, next) => {
       next();
     }
   } catch {
+    logger.error(`Invalid user ID {userId : ${req.body.userId}}`);
     res.status(401).json({
       error: new Error('Invalid request!')
     });
@@ -40,7 +41,8 @@ exports.ownerAuth = (req, res, next) => {
     .then(sauce => {
       // Comparer le user courant au user propriétaire de la sauce à modifier
       if(sauce.userId !== userId){
-        throw 'Forbidden request : the user is not the owner of the ressource';
+        logger.error(`Forbidden request : user is not the owner of the ressource {userId : ${userId}}`);
+        throw "Forbidden request : user is not the owner of the ressource";
       }
       else{
         next();

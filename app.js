@@ -12,19 +12,26 @@ const path = require('path');
 const sauceRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
 
+const logger = require('./logger');
+
 // Importer les paramètres d'environnement
 const config = require('./config');
 
 // Créer une application express
 const app = express();
 
+// test du logger
+// logger.info('Voici une info simple !');
+// logger.warning('Voici un warning simple !');
+// logger.error('Voici une erreur simple !');
+
 // Connection à la BDD mongoDB atlas
 mongoose.connect(`mongodb+srv://${config.dbUser}:${config.dbPassword}@cluster0.p3gpt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`,
     { useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex:true })
-    .then(() => console.log('Connexion à MongoDB réussie !'))
-    .catch(() => console.log('Connexion à MongoDB échouée !'));
+    .then(() => logger.info('Connected successfully to MongoDB !'))
+    .catch(() => logger.error('Failed connection to MongoDB !'));
 
 
 // Middleware GENERAL de gestion des headers pour le CORS
