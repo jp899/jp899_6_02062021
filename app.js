@@ -4,8 +4,13 @@ const express = require('express');
 // Importer le module mongoose
 const mongoose = require('mongoose');
 
+// module pour protection contre les injections NOSQL
 const mongoSanitize = require('express-mongo-sanitize');
-// Importer un module pour acceder au dossier de notre serveur
+
+// module pour protection contre failles dont XSS
+const helmet = require("helmet");
+
+// module pour acceder au dossier de notre serveur
 const path = require('path');
 
 // Importer les routeurs
@@ -44,6 +49,9 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     next();
   });
+
+// Middleware de protection contre failles dont XSS
+app.use(helmet());
 
 // Middleware GENERAL pour parser le body des requettes POST
 app.use(express.json());
