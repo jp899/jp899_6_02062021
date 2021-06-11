@@ -10,16 +10,7 @@ This project has been developped/tested with node version v16.2.0.
 #### Configure environment variables
 
 Create a .env file in the root directory of the repository. 
-Add these lines to use my database :
-```
-DB_CLUSTER='cluster0.p3gpt'
-DB_USER='user1'
-DB_PASSWORD='POMM8Hg2Cz1LuLzU'
-SESSION_TOKEN_SECRET='RANDOM_TOKEN_SECRET'
-SESSION_TOKEN_EXPIRATION_DELAY='24h'
-PASSWORD_SALT_DATA='MonGrainDeSel'
-EMAIL_ENCRYPTION_KEY='bf015203d405068708a9ea0b0c0d0ecf'
-```
+The required variables are listed in the file .env.example .
 
 #### Install and launch the server
 ```
