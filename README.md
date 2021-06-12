@@ -36,3 +36,5 @@ You need to clone [this repository](https://github.com/OpenClassrooms-Student-Ce
 - **crypto-js**,  to encrypt email adresses.
 - **mongoose-unique-validator**, to ckeck unicity of email addresses.
 - **express-mongo-sanitize**, to validate the entries, by replacing the characters that can be used for mongoDB injection attacks.
+- **helmet**, to ensure protection against various threats, inculding XSS vulnerabilities.
+- **epress-rate-limit**, to block login requests after 5 failed atempts.
